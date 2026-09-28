@@ -9,7 +9,6 @@
 #include "kiss_matcher/FasterPFH.hpp"
 
 #include <algorithm>
-#include <execution>
 #include <limits>
 #include <tuple>
 #include <utility>

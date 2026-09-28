@@ -8,7 +8,6 @@
 #pragma once
 
 #include <chrono>
-#include <execution>
 #include <fstream>
 #include <mutex>
 #include <numeric>
