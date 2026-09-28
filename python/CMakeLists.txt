@@ -61,6 +61,14 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   target_compile_options(${OUTPUT_MODULE_NAME} PUBLIC -fsized-deallocation)
 endif ()
 
+# The bundled TBB shared libraries are installed to `<site-packages>/lib`,
+# next to the module, so point the module's RPATH there.
+if(APPLE)
+  set_target_properties(${OUTPUT_MODULE_NAME} PROPERTIES INSTALL_RPATH "@loader_path/lib")
+elseif(UNIX)
+  set_target_properties(${OUTPUT_MODULE_NAME} PROPERTIES INSTALL_RPATH "$ORIGIN/lib")
+endif()
+
 install(TARGETS ${OUTPUT_MODULE_NAME} DESTINATION .)
 
 
