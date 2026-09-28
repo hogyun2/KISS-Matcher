@@ -29,10 +29,14 @@ set(EIGEN_BUILD_LAPACK OFF CACHE BOOL "Don't build lapack module")
 
 include(FetchContent)
 FetchContent_Declare(eigen URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
-                     PATCH_COMMAND patch -p1 < ${CMAKE_CURRENT_LIST_DIR}/eigen.patch UPDATE_DISCONNECTED 1
+                     PATCH_COMMAND patch -p1 -i ${CMAKE_CURRENT_LIST_DIR}/eigen.patch UPDATE_DISCONNECTED 1
                      OVERRIDE_FIND_PACKAGE)
 FetchContent_GetProperties(eigen)
 if(NOT eigen_POPULATED)
+  # On CMake 3.30+, suppress CMP0169 warning for FetchContent_Populate by setting it to OLD
+  if(POLICY CMP0169)
+    cmake_policy(SET CMP0169 OLD)
+  endif()
   FetchContent_Populate(eigen)
   if(${CMAKE_VERSION} GREATER_EQUAL 3.25)
     add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR} SYSTEM EXCLUDE_FROM_ALL)
