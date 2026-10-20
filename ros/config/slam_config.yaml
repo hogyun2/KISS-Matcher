@@ -35,6 +35,24 @@
       loop_detection_radius: 20.0             # ⭐ [Unit: m] Radius for detecting loop candidates.
       loop_detection_timediff_threshold: 90.0 # ⭐ [Unit: t] Minimum time difference for loop candidates
 
+    loop_detector:
+      # External loop detector based on SOLiD (https://github.com/sparolab/SOLiD).
+      # Candidates are retrieved by place recognition and then verified by the registration below.
+      # It complements the radius-based NN search when odometry drift is larger than `loop_detection_radius`.
+      enable: false                   # Enable the SOLiD-based loop detector
+      similarity_threshold: 0.95      # ⭐ Minimum cosine similarity of R-SOLiD to be a loop candidate
+      num_candidates: 1               # Maximum number of candidates per query
+      solid:
+        fov_up: 2.0                   # [Unit: deg] Upper bound of vertical FOV of LiDAR
+        fov_down: -24.8               # [Unit: deg] Lower bound of vertical FOV of LiDAR
+        num_angle: 60
+        num_range: 40
+        num_height: 32                # ⭐ Usually set to the number of LiDAR channels
+        min_range: 3.0
+        max_range: 80.0
+        voxel_size: 0.4
+        knn: 30
+
     local_reg:
       num_threads: 8                  # Number of threads used for local registration
       correspondences_number: 20      # Minimum number of correspondences required

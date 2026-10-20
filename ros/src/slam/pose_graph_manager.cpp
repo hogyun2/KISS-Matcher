@@ -37,6 +37,23 @@ PoseGraphManager::PoseGraphManager(const rclcpp::NodeOptions &options)
   lc_config.loop_detection_timediff_threshold_ =
       declare_parameter<double>("loop.loop_detection_timediff_threshold", 10.0);
 
+  auto &sc                      = ld_config.solid_config_;
+  ld_config.verbose_            = lc_config.verbose_;
+  ld_config.enable_             = declare_parameter<bool>("loop_detector.enable", false);
+  ld_config.timediff_threshold_ = lc_config.loop_detection_timediff_threshold_;
+  ld_config.similarity_threshold_ =
+      declare_parameter<double>("loop_detector.similarity_threshold", 0.95);
+  ld_config.num_candidates_ = declare_parameter<int>("loop_detector.num_candidates", 1);
+  sc.fov_up                 = declare_parameter<double>("loop_detector.solid.fov_up", 2.0);
+  sc.fov_down               = declare_parameter<double>("loop_detector.solid.fov_down", -24.8);
+  sc.num_angle              = declare_parameter<int>("loop_detector.solid.num_angle", 60);
+  sc.num_range              = declare_parameter<int>("loop_detector.solid.num_range", 40);
+  sc.num_height             = declare_parameter<int>("loop_detector.solid.num_height", 32);
+  sc.min_range              = declare_parameter<double>("loop_detector.solid.min_range", 3.0);
+  sc.max_range              = declare_parameter<double>("loop_detector.solid.max_range", 80.0);
+  sc.voxel_size             = declare_parameter<double>("loop_detector.solid.voxel_size", 0.4);
+  sc.knn                    = declare_parameter<int>("loop_detector.solid.knn", 30);
+
   gc.num_threads_               = declare_parameter<int>("local_reg.num_threads", 8);
   gc.correspondence_randomness_ = declare_parameter<int>("local_reg.correspondences_number", 20);
   gc.max_num_iter_              = declare_parameter<int>("local_reg.max_num_iter", 32);
@@ -389,7 +406,11 @@ void PoseGraphManager::performRegistration() {
   need_lc_cloud_vis_update_   = true;
 
   if (reg_output.is_valid_) {
-    RCLCPP_INFO(this->get_logger(), "LC accepted. Overlapness: %.3f", reg_output.overlapness_);
+    RCLCPP_INFO(this->get_logger(),
+                "LC accepted (%zu <-> %zu). Overlapness: %.3f",
+                query_idx,
+                match_idx,
+                reg_output.overlapness_);
     gtsam::Pose3 pose_from = eigenToGtsam(reg_output.pose_ * keyframes_[query_idx].pose_corrected_);
     gtsam::Pose3 pose_to   = eigenToGtsam(keyframes_[match_idx].pose_corrected_);
 

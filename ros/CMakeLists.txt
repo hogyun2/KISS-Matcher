@@ -43,6 +43,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(small_gicp)
 
+# Load SOLiD (LiDAR place recognition) for the external loop detector
+set(BUILD_SOLID_VERIFY OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+  solid
+  GIT_REPOSITORY https://github.com/sparolab/SOLiD
+  GIT_TAG v1.0.0
+  GIT_SHALLOW TRUE
+  # Only the C++ core is needed; skip the SLAM integrations pulled in as submodules
+  GIT_SUBMODULES ""
+  SOURCE_SUBDIR cpp
+)
+FetchContent_MakeAvailable(solid)
+
 find_package(ament_cmake REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(rcutils REQUIRED)
@@ -111,6 +124,7 @@ target_link_libraries(kiss_matcher_sam
   kiss_matcher::kiss_matcher_core
   ${PCL_LIBRARIES}
   small_gicp
+  solid::core
   gtsam
 )
 
